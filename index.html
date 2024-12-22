@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Project Management Tool</h1>
+
+    <!-- Form to create a new project -->
+    <div class="form-section">
+        <h2>Create a New Project</h2>
+        <input type="text" id="projectName" placeholder="Project Name">
+        <button onclick="createProject()">Add Project</button>
+    </div>
+
+    <!-- Form to assign a task -->
+    <div class="form-section">
+        <h2>Assign a Task</h2>
+        <select id="projectSelect">
+            <option value="">Select Project</option>
+        </select>
+        <input type="text" id="taskName" placeholder="Task Name">
+        <input type="date" id="taskDeadline">
+        <button onclick="assignTask()">Assign Task</button>
+    </div>
+
+    <!-- Projects and Tasks Display -->
+    <div class="projects" id="projectsContainer">
+        <!-- Projects will be dynamically added here -->
+    </div>
+</div>
+
+<script>
+    let projects = [];
+
+    function createProject() {
+        const projectName = document.getElementById('projectName').value.trim();
+        if (projectName) {
+            const project = {
+                name: projectName,
+                tasks: []
+            };
+            projects.push(project);
+            document.getElementById('projectName').value = '';
+            updateProjects();
+        } else {
+            alert('Please enter a project name.');
+        }
+    }
+
+    function assignTask() {
+        const projectName = document.getElementById('projectSelect').value;
+        const taskName = document.getElementById('taskName').value.trim();
+        const taskDeadline = document.getElementById('taskDeadline').value;
+
+        if (projectName && taskName && taskDeadline) {
+            const project = projects.find(p => p.name === projectName);
+            if (project) {
+                project.tasks.push({
+                    name: taskName,
+                    deadline: taskDeadline
+                });
+                document.getElementById('taskName').value = '';
+                document.getElementById('taskDeadline').value = '';
+                updateProjects();
+            }
+        } else {
+            alert('Please fill out all fields.');
+        }
+    }
+
+    function updateProjects() {
+        const projectsContainer = document.getElementById('projectsContainer');
+        const projectSelect = document.getElementById('projectSelect');
+
+        projectsContainer.innerHTML = '';
+        projectSelect.innerHTML = '<option value="">Select Project</option>';
+
+        projects.forEach(project => {
+            // Update project dropdown
+            const option = document.createElement('option');
+            option.value = project.name;
+            option.textContent = project.name;
+            projectSelect.appendChild(option);
+
+            // Display project and its tasks
+            const projectDiv = document.createElement('div');
+            projectDiv.className = 'project';
+
+            const projectTitle = document.createElement('h3');
+            projectTitle.textContent = project.name;
+            projectDiv.appendChild(projectTitle);
+
+            const taskList = document.createElement('ul');
+            project.tasks.forEach(task => {
+                const taskItem = document.createElement('li');
+                taskItem.textContent = `${task.name} - Deadline: ${task.deadline}`;
+                taskList.appendChild(taskItem);
+            });
+
+            projectDiv.appendChild(taskList);
+            projectsContainer.appendChild(projectDiv);
+        });
+    }
+</script>
+
+</body>
+</html>
